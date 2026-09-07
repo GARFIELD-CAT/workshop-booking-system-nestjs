@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 
 import { AppModule } from './app.module';
 
@@ -23,9 +24,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  app
+    .getHttpAdapter()
+    .get('/api/schema', (_request: Request, response: Response) => {
+      response.json(document);
+    });
   SwaggerModule.setup('schema/swagger-ui', app, document, {
     useGlobalPrefix: true,
-    jsonDocumentUrl: '/api/schema/',
     customSiteTitle: 'Workshop Booking API',
   });
 

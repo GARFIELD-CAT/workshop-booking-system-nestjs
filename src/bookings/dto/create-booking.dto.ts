@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, Min } from 'class-validator';
+import { IsInt, IsOptional, Min } from 'class-validator';
 
 export class CreateBookingDto {
   @ApiProperty({ name: 'workshop_id', example: 1 })
@@ -8,4 +8,11 @@ export class CreateBookingDto {
   @IsInt()
   @Min(1)
   workshop_id!: number;
+
+  @ApiPropertyOptional({ description: 'Игнорируется сервером' })
+  @Type(() => Number)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  user?: number;
 }

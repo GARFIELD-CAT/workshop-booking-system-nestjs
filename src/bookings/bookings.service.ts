@@ -121,11 +121,14 @@ export class BookingsService {
       let booking: Booking | null = null;
 
       if (bookingId !== undefined) {
-        booking = await repository.findOne({
-          where: { id: bookingId, user: { id: user.id } },
-          relations: { user: true, workshop: true },
-          lock: { mode: 'pessimistic_write' },
-        });
+        booking = await repository
+          .createQueryBuilder('booking')
+          .innerJoinAndSelect('booking.user', 'bookingUser')
+          .innerJoinAndSelect('booking.workshop', 'bookingWorkshop')
+          .where('booking.id = :bookingId', { bookingId })
+          .andWhere('bookingUser.id = :userId', { userId: user.id })
+          .setLock('pessimistic_write')
+          .getOne();
 
         if (booking === null) {
           throw new NotFoundException('Бронь не найдена.');

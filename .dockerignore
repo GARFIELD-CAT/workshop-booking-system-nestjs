@@ -1,0 +1,10 @@
+.git
+node_modules
+dist
+coverage
+.env
+*.log
+Dockerfile*
+compose*.yaml
+README.md
+postman

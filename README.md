@@ -1,99 +1,177 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Workshop Booking System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API для просмотра мастер-классов и бронирования мест. Проект выполнен на
+TypeScript, NestJS, TypeORM и PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Обычный пользователь может зарегистрироваться, войти в систему, посмотреть
+мастер-классы, создать бронь и управлять только своими бронями. Пользователь с
+ролью `admin` может создавать, изменять и удалять мастер-классы.
 
-## Description
+## Технологии
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Node.js 22 в Docker;
+- NestJS 10;
+- TypeORM;
+- PostgreSQL 16;
+- JWT access- и refresh-токены;
+- Swagger и ReDoc;
+- Jest, Supertest и Postman.
 
-## Project setup
+## Запуск через Docker
 
-```bash
-$ npm install
+Для запуска нужны Docker и Docker Compose.
+
+1. Создайте локальный файл с настройками:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+2. Соберите и запустите контейнеры:
+
+   ```powershell
+   docker compose up --build
+   ```
+
+3. Откройте список мастер-классов:
+
+   ```text
+   http://127.0.0.1:8000/api/workshops/
+   ```
+
+При запуске контейнера автоматически применяются миграции. Первая миграция
+создаёт таблицы и ограничения, вторая добавляет демонстрационные данные.
+
+Остановить проект можно командой:
+
+```powershell
+docker compose down
 ```
 
-## Compile and run the project
+Чтобы также удалить локальные данные PostgreSQL:
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```powershell
+docker compose down -v
 ```
 
-## Run tests
+## Демонстрационные пользователи
 
-```bash
-# unit tests
-$ npm run test
+| Роль | Email | Пароль |
+|---|---|---|
+| Администратор | `admin@example.com` | `admin` |
+| Пользователь | `user@example.com` | `user` |
+| Пользователь | `user2@example.com` | `user2` |
 
-# e2e tests
-$ npm run test:e2e
+Эти учётные записи предназначены для локальной демонстрации проекта. Для
+публичного размещения пароли и JWT-секреты из `.env` нужно заменить.
 
-# test coverage
-$ npm run test:cov
+## Документация API
+
+После запуска доступны:
+
+- Swagger UI: `http://127.0.0.1:8000/api/schema/swagger-ui/`;
+- OpenAPI JSON: `http://127.0.0.1:8000/api/schema/`;
+- ReDoc: `http://127.0.0.1:8000/api/schema/redoc/`.
+
+Основные эндпоинты:
+
+| Метод и путь | Назначение | Доступ |
+|---|---|---|
+| `POST /api/register/` | Регистрация | Публичный |
+| `POST /api/token/` | Получение access- и refresh-токенов | Публичный |
+| `POST /api/token/refresh/` | Обновление access-токена | Публичный |
+| `GET /api/workshops/` | Список мастер-классов | Публичный |
+| `GET /api/workshops/:id/` | Один мастер-класс | Публичный |
+| `POST /api/workshops/` | Создание мастер-класса | Администратор |
+| `PUT/PATCH /api/workshops/:id/` | Изменение мастер-класса | Администратор |
+| `DELETE /api/workshops/:id/` | Удаление мастер-класса | Администратор |
+| `GET /api/bookings/` | Свои бронирования | Авторизованный пользователь |
+| `GET /api/bookings/:id/` | Своя бронь | Авторизованный пользователь |
+| `POST /api/bookings/` | Создание брони | Авторизованный пользователь |
+| `PUT/PATCH /api/bookings/:id/` | Перенос своей брони | Авторизованный пользователь |
+| `DELETE /api/bookings/:id/` | Отмена своей брони | Авторизованный пользователь |
+
+Для защищённых запросов передаётся заголовок:
+
+```text
+Authorization: Bearer <access-токен>
 ```
 
-## Deployment
+## Правила бронирования
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Нельзя записаться на прошедший мастер-класс.
+- Один пользователь не может дважды записаться на один мастер-класс.
+- Число броней не может превышать вместимость.
+- При одновременных запросах строка мастер-класса блокируется в PostgreSQL,
+  поэтому последнее место получит только один пользователь.
+- Пользователь получает только свои бронирования.
+- Ответ с бронью содержит данные пользователя и вложенный мастер-класс, но не
+  содержит пароль.
+- Названия мастер-классов уникальны.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Сервер и PostgreSQL хранят даты в UTC. Клиент может преобразовать полученную
+ISO-дату в часовой пояс пользователя при отображении.
 
-```bash
-$ npm install -g mau
-$ mau deploy
+## Структура проекта
+
+```text
+src/
+  auth/       регистрация, вход и JWT
+  users/      пользователь и работа с учётными записями
+  workshops/  CRUD мастер-классов
+  bookings/   CRUD бронирований и проверка свободных мест
+  common/     guards, декораторы и общие типы
+  database/   подключение TypeORM и миграции
+postman/      коллекция и окружение Postman
+test/         интеграционные тесты API
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Контроллеры принимают HTTP-запросы, DTO проверяют входные данные, сервисы
+содержат бизнес-логику, а сущности TypeORM описывают таблицы и связи.
+`QueryBuilder` с join используется при чтении броней, чтобы получить связанные
+данные одним запросом.
 
-## Resources
+## Локальная разработка
 
-Check out a few resources that may come in handy when working with NestJS:
+Рекомендуется Node.js 20 или 22.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```powershell
+npm ci
+Copy-Item .env.example .env
+docker compose up -d db
+npm run migration:run
+npm run start:dev
+```
 
-## Support
+Полезные команды:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```powershell
+npm run build
+npm run lint
+npm test -- --runInBand
+npm run test:e2e -- --runInBand
+npm run migration:revert
+```
 
-## Stay in touch
+Интеграционные тесты используют PostgreSQL из `.env`. Перед их запуском база
+должна быть доступна, а миграции должны быть применены. Тест параллельно
+отправляет два запроса на единственное место и проверяет, что создаётся ровно
+одна бронь.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Postman
 
-## License
+Импортируйте два файла:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- `postman/Workshop.postman_collection.json`;
+- `postman/Local.postman_environment.json`.
+
+Выберите окружение `Workshop Local` и запустите коллекцию целиком. Она содержит
+56 запросов и 121 автоматическую проверку: регистрацию, JWT, права доступа, CRUD
+мастер-классов и броней, ошибки валидации, Swagger и ReDoc.
+
+Коллекцию также можно выполнить из консоли:
+
+```powershell
+npx newman run postman/Workshop.postman_collection.json `
+  -e postman/Local.postman_environment.json
+```

@@ -73,6 +73,8 @@ export class WorkshopsService {
   }
 
   update(id: number, dto: UpdateWorkshopDto): Promise<Workshop> {
+    // Блокировка внутри транзакции не даёт одновременно уменьшить
+    // вместимость и создать новую бронь.
     return this.dataSource.transaction(async (manager) => {
       const workshopsRepository = manager.getRepository(Workshop);
       const workshop = await workshopsRepository.findOne({

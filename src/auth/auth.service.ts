@@ -23,6 +23,9 @@ export class AuthService {
 
   async register(dto: RegisterDto): Promise<PublicUser> {
     const password = await hash(dto.password, 10);
+
+    // Роль из запроса не используем: самостоятельно зарегистрироваться
+    // администратором нельзя.
     const user = await this.usersService.create({
       email: dto.email.toLowerCase(),
       username: dto.username,

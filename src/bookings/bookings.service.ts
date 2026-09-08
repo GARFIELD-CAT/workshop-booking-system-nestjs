@@ -31,6 +31,8 @@ export class BookingsService {
   ) {}
 
   async findAll(user: User, page: number): Promise<PaginatedResponse<Booking>> {
+    // Загружаем пользователя и мастер-класс одним запросом, чтобы не
+    // обращаться к базе отдельно для каждой брони.
     const [bookings, count] = await this.bookingsRepository
       .createQueryBuilder('booking')
       .leftJoinAndSelect('booking.user', 'user')

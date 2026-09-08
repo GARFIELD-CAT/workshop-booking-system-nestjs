@@ -10,7 +10,7 @@ TypeScript, NestJS, TypeORM и PostgreSQL.
 ## Технологии
 
 - Node.js 22 в Docker;
-- NestJS 10;
+- NestJS 11;
 - TypeORM;
 - PostgreSQL 16;
 - JWT access- и refresh-токены;

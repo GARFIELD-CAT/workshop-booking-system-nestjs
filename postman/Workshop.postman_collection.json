@@ -2236,35 +2236,7 @@
       ]
     },
     {
-      "name": "44 Корень API",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json"
-          }
-        ],
-        "url": "{{base_url}}/api/",
-        "auth": {
-          "type": "noauth"
-        }
-      },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test(\"Код ответа 200\", function () { pm.response.to.have.status(200); });",
-              "pm.test(\"Ответ в JSON\", function () { pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\"); });"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "45 Схема OpenAPI",
+      "name": "44 Схема OpenAPI",
       "request": {
         "method": "GET",
         "header": [
@@ -2293,7 +2265,7 @@
       ]
     },
     {
-      "name": "46 Swagger UI",
+      "name": "45 Swagger UI",
       "request": {
         "method": "GET",
         "header": [
@@ -2320,7 +2292,7 @@
       ]
     },
     {
-      "name": "47 ReDoc",
+      "name": "46 ReDoc",
       "request": {
         "method": "GET",
         "header": [

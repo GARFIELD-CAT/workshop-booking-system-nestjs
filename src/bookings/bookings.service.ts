@@ -90,7 +90,8 @@ export class BookingsService {
         throw new NotFoundException('Бронь не найдена.');
       }
 
-      // Блокировка мастер-класса согласована с созданием брони.
+      // Блокируем мастер-класс, чтобы удаление брони не пересеклось
+      // с одновременной записью другого пользователя.
       await manager.getRepository(Workshop).findOne({
         where: { id: booking.workshop.id },
         lock: { mode: 'pessimistic_write' },
@@ -105,7 +106,8 @@ export class BookingsService {
     bookingId?: number,
   ): Promise<Booking> {
     return this.dataSource.transaction(async (manager) => {
-      // Блокировка строки не позволяет двум запросам занять последнее место.
+      // Проверяем места после блокировки мастер-класса, чтобы два
+      // одновременных запроса не заняли одно последнее место.
       const workshop = await manager.getRepository(Workshop).findOne({
         where: { id: workshopId },
         lock: { mode: 'pessimistic_write' },

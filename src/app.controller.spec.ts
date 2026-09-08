@@ -1,24 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 describe('AppController', () => {
-  let appController: AppController;
+  const appController = Object.create(AppController.prototype) as AppController;
 
-  beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService],
-    }).compile();
+  it('loads the ReDoc client from the local application', () => {
+    const html = appController.getRedoc();
 
-    appController = app.get<AppController>(AppController);
-  });
-
-  it('returns links to main API resources', () => {
-    expect(appController.getApiRoot()).toEqual({
-      workshops: '/api/workshops/',
-      bookings: '/api/bookings/',
-    });
+    expect(html).toContain('src="./redoc.standalone.js"');
+    expect(html).not.toContain('https://cdn.redoc.ly');
   });
 });

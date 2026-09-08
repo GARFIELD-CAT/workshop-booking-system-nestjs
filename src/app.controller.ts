@@ -1,19 +1,10 @@
-import { Controller, Get, Header } from '@nestjs/common';
-import { ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { createReadStream } from 'node:fs';
 
-import { AppService } from './app.service';
+import { Controller, Get, Header, StreamableFile } from '@nestjs/common';
+import { ApiExcludeEndpoint } from '@nestjs/swagger';
 
-@ApiTags('api')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  @ApiOperation({ summary: 'Ссылки на основные ресурсы API' })
-  getApiRoot() {
-    return this.appService.getApiRoot();
-  }
-
   @Get('schema/redoc')
   @Header('Content-Type', 'text/html; charset=utf-8')
   @ApiExcludeEndpoint()
@@ -26,8 +17,18 @@ export class AppController {
   </head>
   <body>
     <redoc spec-url="/api/schema/"></redoc>
-    <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+    <script src="./redoc.standalone.js"></script>
   </body>
 </html>`;
+  }
+
+  @Get('schema/redoc/redoc.standalone.js')
+  @ApiExcludeEndpoint()
+  getRedocScript(): StreamableFile {
+    const scriptPath = require.resolve('redoc/bundles/redoc.standalone.js');
+
+    return new StreamableFile(createReadStream(scriptPath), {
+      type: 'application/javascript; charset=utf-8',
+    });
   }
 }

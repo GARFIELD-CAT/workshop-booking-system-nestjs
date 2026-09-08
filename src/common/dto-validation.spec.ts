@@ -4,6 +4,7 @@ import { validate } from 'class-validator';
 
 import { RegisterDto } from '../auth/dto/register.dto';
 import { CreateBookingDto } from '../bookings/dto/create-booking.dto';
+import { CreateWorkshopDto } from '../workshops/dto/create-workshop.dto';
 
 describe('DTO compatibility', () => {
   const validationPipe = new ValidationPipe({
@@ -43,4 +44,33 @@ describe('DTO compatibility', () => {
       }),
     ).resolves.toBeInstanceOf(CreateBookingDto);
   });
+
+  it('rejects a workshop date without an explicit timezone', async () => {
+    const dto = plainToInstance(CreateWorkshopDto, {
+      title: 'NestJS для начинающих',
+      description: 'Практический мастер-класс',
+      date: '2030-01-10T15:00:00',
+      capacity: 10,
+    });
+
+    const errors = await validate(dto);
+
+    expect(errors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ property: 'date' })]),
+    );
+  });
+
+  it.each(['2030-01-10T15:00:00Z', '2030-01-10T15:00:00+03:00'])(
+    'accepts a workshop date with an explicit timezone: %s',
+    async (date) => {
+      const dto = plainToInstance(CreateWorkshopDto, {
+        title: 'NestJS для начинающих',
+        description: 'Практический мастер-класс',
+        date,
+        capacity: 10,
+      });
+
+      await expect(validate(dto)).resolves.toHaveLength(0);
+    },
+  );
 });
